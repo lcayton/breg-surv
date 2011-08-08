@@ -1,0 +1,17 @@
+1. Brief intro
+2. Definition & Motivation
+    * formal definition + figure illustrating the breg div as the
+    difference between a function and its first-order approximation
+    * generalization of l_2 + KL divergence; connection to k-means
+    * origin in convex optimization
+    * csiszar's axiomatic work
+    * information geometric stuff
+    * connection to exponential families
+3. Geometry
+    * pythagorean thm
+    * conjugacy, fenchel-young
+    * technical results: centroidal property (though we might cover
+    this above), composability, difference of two divergences as an
+    affine set.
+    * projection onto a bregman ball; dually-linear stuff.
+    * voronoi/delaunay, etc.

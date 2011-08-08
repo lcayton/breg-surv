@@ -4,9 +4,10 @@
     difference between a function and its first-order approximation
     * generalization of l_2 + KL divergence; connection to k-means
     * origin in convex optimization
+    * connection to exponential families
     * csiszar's axiomatic work
     * information geometric stuff
-    * connection to exponential families
+
 3. Geometry
     * pythagorean thm
     * conjugacy, fenchel-young

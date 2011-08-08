@@ -19,10 +19,7 @@
 \begin{document}
 \maketitle
 
-In this chapter, we give a self-contained overview on the basics of
-Bregman divergences.  Though these results are mostly known, they do
-not appear to be collected anywhere.  
-
+\section{Introduction}
 Bregman divergences were introduced by Bregman in \cite{b.67} and have
 traditionally been studied by researchers in the optimization and
 numerical analysis communities.  The book \cite{cz.97} contains a
@@ -33,6 +30,21 @@ and online learning, \textit{e.g.}
 \cite{gls.97,hw.98,aw.01} and were later identified with the $k$-means
 algorithm \cite{bm.05}.   
 
+\section{Definition and Motivation}
+In this section we explain what a bregman divergence is and why they
+are compelling objects of study.  These divergences arise naturally
+from a surprisingly disparate collection of sources.  We consider
+four.  First, they are a key ingredient in iterative optimization
+schemes for convex optimization.  Second, they have a deep connection
+to the exponential family of probability distributions.  Third, they
+arise out of basic axioms in connection with maximum likelihood
+estimation.  Finally, they satisfy certain mathematical properties
+that make them a central concept in information geometry.  
+%Their basic
+%mathematical properties show them to be a generalization of $\ell_2^2$
+%and the relative entropy, connecting them to the $k$-means algorithm.  
+
+\subsection{Formal Definition}
 \begin{define}
 Let $f:C \subset \R^D \rightarrow \R$ be a strictly convex function that is
 differentiable on the relative interior of $C$.  The bregman divergence based
@@ -102,271 +114,9 @@ always non-negative and equal to zero only if its two arguments are
 identical.  It is similarly easy to check that a bregman divergences
 is convex in its first argument, but not necessarily in its second.  
 
-\section{Pythagorean theorem}
-The pythagorean theorem is a key property of bregman divergences that
-governs the geometry of bregman projections.  This theorem 
-underlies some of the bregman geometry we develop in chapter
-\ref{chap:bbtree}, even though it is not explicitly used.  
-\begin{theorem} Let $C$ be a closed convex set and let $y = \argmin_{y \in C}
-  d_f(y,z)$ be the bregman projection of $z$ onto $C$.  Further suppose
-  that $x\in C$.  Then 
-\begin{align*}
-d_f(x,z) \geq d_f(x,y) + d_f(y,z).
-\end{align*} \label{thm:pythagineq}
-\end{theorem} 
-\begin{proof}
-Define $G(x) = d_f(x,y)-d_f(x,z)$.  Then
-\begin{align*}
-G(x) &= f(x)-f(y) - \langle \nabla f(y),x-y\rangle - \left(
-  f(x)-f(z)-\langle \nabla f(z),x-z \rangle \right)\\
-&= f(z) + \langle \nabla f(z),x-z \rangle - f(y) - \langle \nabla
-f(y), x-y \rangle,
-\end{align*}
-so $G$ is linear in $x$.  Moreover $G(y)= d_f(y,y) - d_f(y,z) =
--d_f(y,z)$. Let $\alpha \in [0,1]$ and $x_\alpha = \alpha x + (1-\alpha)y$.   
-\begin{align*}
-G(x_\alpha) = G(\alpha x + (1-\alpha) y) &= \alpha G(x) +
-(1-\alpha)G(y) \\
-&= \alpha (d_f(x,y)-d_f(x,z) +d_f(y,z)) -d_f(y,z).
-\end{align*}
-Also,
-\begin{align*}
-G(x_\alpha) =d_f(x_\alpha,y) - d_f(x_\alpha,z),
-\end{align*}
-so, when $\alpha>0$,
-\begin{align*}
-d_f(x,y) +d_f(y,z) - d_f(x,z) = \frac{d_f(y,z)+ d_f(x_\alpha,y) -
-  d_f(x_\alpha,z)}{\alpha}.
-\end{align*}
-We show that the right hand side is less than or equal to zero.  Since
-$x_\alpha \in C$ and $y$ is the projection of $z$ onto $C$, $d_f(y,z)
-\leq d_f(x_\alpha,z)$. Thus we only need to show that
-$\frac{d_f(x_\alpha,y)}{\alpha} \leq 0$ for some $\alpha$.  We do this
-by taking the limit as $\alpha\rightarrow 0$ from the right:  
-\begin{align*}
-\lim_{\alpha\rightarrow 0} \frac{d_f(x_\alpha,y)}{\alpha} &=
-\lim_{\alpha\rightarrow 0} \frac{f(\alpha x+ (1-\alpha)y) - f(y)
-  -\langle \nabla f(y),\alpha x-\alpha y\rangle}{\alpha} \\
-&= \lim_{\alpha\rightarrow 0} \frac{f(\alpha x + (1-\alpha)y) -
-  f(y)}{\alpha} - \lim_{\alpha\rightarrow 0} \frac{\langle \nabla
-  f(y),\alpha x + (1-\alpha)y -y \rangle}{\alpha}\\
-&= \langle \nabla f(y),x-y \rangle - \lim_{\alpha\rightarrow 0}
-\langle \nabla f(y),x-y \rangle \quad \mbox{ (by
-  l'H\^{o}pitals rule) } \\
-&= 0. 
-\end{align*}
-\end{proof}
-The previous inequality becomes an equality if $C$ is an affine space.
-\begin{theorem} Let $C$ be an affine space and let $y=\argmin_{y\in C}
-  d_f(y,z)$ be the bregman projection of $z$ onto $C$.  Let $x\in C$.
-  Then
-\begin{align*}
-d_f(x,z) = d_f(x,y) + d_f(y,z).
-\end{align*}
-\end{theorem}
-\begin{proof}
-Let $x'$ be any point in $C$, and set $\lambda$ to satisfy 
-$y=\lambda x+ (1-\lambda) x'$.  
-Define $x_\alpha = \alpha x + (1-\alpha)
-x'$, and let $G(x) = d_f(x,y) - d_f(x,z)$.  Since $G(x_\alpha) =
-d_f(x_\alpha,y) - d_f(x_\alpha,z)$,
-\begin{align}
-\frac{\partial G(x_\alpha)}{\partial \alpha} =
-\frac{\partial}{\partial \alpha} d_f(x_\alpha,y) -
-\frac{\partial}{\partial \alpha} d_f(x_\alpha,z). \label{eq:derivs}
-\end{align}
-Note that $x_{\alpha}\in C$; since $y$ is the projection of $z$ onto
-$C$ and $x_\alpha = y$ when $\alpha=\lambda$, $d_f(x_\alpha,z)$ is
-minimized at $\alpha=\lambda$.  Moreover, $d_f(x_\alpha,y)$ is also
-minimized at $\alpha=\lambda$ (it is zero there).  Thus, both 
-divergences on the right of (\ref{eq:derivs}) are minimized at
-$\alpha=\lambda$, implying $\left. \frac{\partial
-  G(x_\alpha)}{\partial \alpha} \right|_{\alpha = \lambda} = 0$.
+\subsection{Convex optimizaton}
 
-Using the linearity of $G$ (see the proof of theorem
-\ref{thm:pythagineq}), we can expand 
-\begin{align*} 
-G(x_\alpha) &= d_f(x_\alpha,y) - d_f(x_\alpha,z) \\
-&= \alpha (d_f(x,y) - d_f(x,z)) + (1-\alpha) (d_f(x',y) - d_f(x',z)).
-\end{align*}
-
-Differentiating with respect to $\alpha$, we get
-\begin{align*}
-\frac{\partial G(x_\alpha)}{\partial \alpha} = d_f(x,y)-d_f(x,z) - d_f(x',y)
-+ d_f(x',z).
-\end{align*}
-At $\alpha=\lambda$, $\frac{\partial G(x_\alpha)}{\partial \alpha}=0$,
-so
-\begin{align*}
-d_f(x,y)-d_f(x,z) - d_f(x',y)
-+ d_f(x',z)=0.
-\end{align*}
-This equality is true for all $x' \in C$, so picking $x'=y$, we get 
-\begin{align*}
-d_f(x,z) = d_f(x,y) + d_f(y,z).
-\end{align*}
-\end{proof}
-
-\section{Conjugacy} \label{sec:conjugate}
-Conjugacy is a central duality notion used in convex analysis \cite{r.70}.
-\begin{define}
-The \emph{convex conjugate} of a function $f: \R^d\rightarrow \R$ is
-\begin{align*}
-f^*(x) = \sup_y \left\{\langle x,y \rangle - f(y) \right\}.
-\end{align*}
-\end{define}
-The definition of a conjugate function immediately yields the 
-\emph{Fenchel-Young inequality}:
-\begin{align*}
-f(x) + f^*(y) \geq \langle x,y \rangle.
-\end{align*}
-If $f$ is differentiable, we can compute $f^*$ by setting the
-derivative to zero:
-\begin{align*}
-&\nabla_y \left( \langle x,y \rangle - f(y) \right)  = x - \nabla f(y)
-= 0\\
-&\Longrightarrow x = \nabla f(y)\\
-&\Longrightarrow y = (\nabla f)^{-1}(x).
-\end{align*}
-Thus
-\begin{align}
-f^*(x) = \langle x, (\nabla f)^{-1}(x) \rangle - f( (\nabla
-f)^{-1}(x)). \label{eq:conjdef}
-\end{align}
-A crucial property of the conjugate function is that its gradient
-is an inverse to the gradient of the original function.  To keep
-notation clean, define $h(x) \equiv \nabla f(x)$.  Then, following the
-above derivation, we have
-\begin{align*}
-f^*(x) &= \langle x,h^{-1}(x) \rangle - f(h^{-1}(x)); \mbox{ implying
-  that }\\
-\nabla f^*(x) &= h^{-1}(x) + \nabla h^{-1}(x) \cdot x - \nabla
-h^{-1}(x) \nabla f(h^{-1}(x))\\
-&=h^{-1}(x)\mbox{\;\; (since }\nabla f(x) = h(x)).  
-\end{align*}
-Thus $\nabla f$ and $\nabla f^*$ are inverses of one-another.  
-
-Let $x' \equiv \nabla f(x)$ and $y' \equiv \nabla f(y)$.  
-Then plugging $x'$ and $y'$ into (\ref{eq:conjdef}), we get the
-convenient relations 
-\begin{align*}
-f^*(x') &= \langle x',x \rangle - f(x) \quad \mbox{and}\\
-f^*(y') &= \langle y',y \rangle - f(y).
-\end{align*}
-Let us now consider the bregman divergence 
-associated with $f$ in light of the conjugate function. We show
-that $d_{f^*}(y',x') = 
-d_f(x,y)$. 
-\begin{align*}
-d_{f^*}(y',x') &= f^*(y') - f^*(x') - \langle \nabla f^*(x'), y'-x'
-\rangle \\
-&= \langle y',y \rangle -f(y) - \langle x,x' \rangle + f(x) - \langle
-\nabla f^*(x'), y'-x' \rangle\\
-&= f(x) - f(y) -\langle x',x \rangle + \langle y',y
-\rangle - \langle x,y' - x' \rangle \quad
-\mbox{(since $x = \nabla f^*(x')$)}\\
-&= f(x) - f(y) - \langle \nabla f(y),x-y \rangle \\
-&= d_f(x,y).
-\end{align*}
-This equality is useful because it permits algorithms designed to
-optimize over the first argument to work over the second argument.  It
-provides an elegant way to sidestep the asymmetry of bregman
-divergences.  See section \ref{sec:rnn} for an example.
-
-Another easily derived equality is 
-\begin{align} 
-d_f(x,y) = f(x) + f^*(y') - \langle x,y'\rangle . \label{eq:breg-youngs}
-\end{align}
-This equality reveals another interpretation interpretation of a
-bregman divergence: it is a measurement of the slackness in the
-Fenchel-Young inequality. 
-
-\section{Centroidal property}
-Bregman divergences satisfy a centroidal property that makes them
-amenable to $k$-means style clustering \cite{bm.05}.  This property states
-that the average divergence from a point to a set can be decomposed as
-the divergence from the point to the set's centroid plus the average
-divergence from the set to the centroid.  
-\begin{theorem}
-Let $S \subset \R^d$ be a set of size $n$ and let $d_f(S,x)$ denote
-$\sum_{s\in S} d_f(s,x)$.  Let $\mu = \frac{1}{n}\sum_{s\in S} s$ be the mean of
-$S$.  Then for all $x \in \R^d$, 
-\begin{align*}
-d_f(S,x) = d_f(S,\mu) + n d_f(\mu,x).
-\end{align*}
-\end{theorem}
-\begin{proof}
-Expanding the right side, we have
-\begin{align*}
-d_f&(S,\mu) + n \cdot d_f(\mu,x) \\
-&= \sum_s f(s) - n f(\mu) - \sum_s \langle \nabla
-f(\mu),s-\mu \rangle +n f(\mu) - n f(x) - n \langle \nabla f(x),\mu-x \rangle\\
-&= \sum_s \left( f(s) - f(x) \right) - \sum_s \langle \nabla
-f(\mu),s-\mu \rangle - n \langle \nabla f(x),\mu-x \rangle \\
-&= \sum_s \left( f(s) - f(x) \right) - \left\langle \nabla f(\mu),\sum_s s-
-n \mu \right\rangle - \langle \nabla f(x),n\mu-nx \rangle \\
-&= \sum_s \left( f(s) - f(x) \right) - \left\langle \nabla f(x),\sum_s
-(s-x) \right\rangle \\
-&= \sum_s \left( f(s) - f(x) - \langle \nabla f(x),s-x \rangle \right)
-\\
-&= d_f(S,x).
-\end{align*}
-\end{proof}
-
-
-\section{Composability}
-One convenient property of bregman divergences is that they can by
-composed.  Suppose that $\{f_i\}$ are strictly convex functions and
-$\{\alpha_i\}$ is a set of non-negative numbers.  Then $g\equiv\sum\alpha_i
-f_i$ is also a strictly convex function. Thus we can define a bregman
-divergence based on $g$
-\begin{align*}
-d_g(x,y) &= \sum \alpha_i f_i(x) - \sum\alpha_i f_i(y) -\langle \nabla
-\left[ \sum\alpha_i f_i(y)\right],x-y \rangle\\
-&= \sum \alpha_id_{f_i}(x,y).
-\end{align*}
-Similarly, one can define a $D$-dimensional multivariate bregman
-by summing $D$ one-dimensional bregman divergences coordinate-wise.
-These properties are useful for working with mixed-type data.  For
-example, a point $x$ might have a histogram component of, say, the first
-10 coordinates, and a vector coordinate of the next 5 coordinates.
-A reasonable way to compute the distance between two such points would
-be to measure the KL-divergence between the first 10 coordinates, and
-the $\ell_2^2$ distance between the last 5.  Any machinery defined for
-arbitrary bregman divergences, such as the fast NN algorithms
-developed in this dissertation, will be able to handle this mixed-type
-divergence as it is itself a bregman divergence.  
-
-\section{Additional geometric facts} \label{sec:bregextra}
-In the proof of theorem \ref{thm:pythagineq}, we showed that the
-difference $G(x)=d_f(x,y) - d_f(x,z)$ is linear in $x$:
-\begin{align*}
-G(x) &= f(x)-f(y)- \langle \nabla f(y),x-y \rangle -\left( f(x) - f(z)
-  -\langle f(z),x-z \rangle \right)\\
-&= f(z) + \langle \nabla f(z),x-z \rangle - f(y) - \langle \nabla
-f(y), x-y \rangle.
-\end{align*}
-In particular, this means that the set of points equidistant from $y$
-and $z$ lie on a hyperplane.
-\begin{theorem}
-The set of points $\{x: d_f(x,y) = d_f(x,z)\}$ is an affine set. 
-\end{theorem}
-
-Bregman divergences do not in general satisfy the triangle inequality,
-but do satisfy the three point property
-\begin{align*}
-d_f(x,y) + d_f(y,z) = d_f(x,z) + \langle \nabla f(z) - \nabla f(y),x-y
-\rangle. 
-\end{align*}
-
-Finally, symmetrized bregman divergences have a particularly simple form:
-\begin{align*}
-d_f(x,y) + d_f(y,x) &= f(x) - f(y) - \langle \nabla f(y),x-y \rangle +
-f(y) - f(x) - \langle \nabla f(x), y-x \rangle \\
-&= \langle \nabla f(x) - \nabla f(y), x-y \rangle. 
-\end{align*}
-
-\section{Exponential families}
+\subsection{Exponential families}
 There is a remarkable connection between bregman divergences and
 exponential families.  We sketch the basic details in this
 section.  
@@ -482,6 +232,272 @@ is a related bregman divergence.  In \cite{bm.05}, it is shown that
 there is a one-to-one correspondence between the regular exponential
 families and the so-called regular bregman divergences---bregman
 divergences defined over a restricted class of convex base functions.  
+
+\section{Geometry}
+\subsection{Pythagorean theorem}
+The pythagorean theorem is a key property of bregman divergences that
+governs the geometry of bregman projections.  This theorem 
+underlies some of the bregman geometry we develop in chapter
+\ref{chap:bbtree}, even though it is not explicitly used.  
+\begin{theorem} Let $C$ be a closed convex set and let $y = \argmin_{y \in C}
+  d_f(y,z)$ be the bregman projection of $z$ onto $C$.  Further suppose
+  that $x\in C$.  Then 
+\begin{align*}
+d_f(x,z) \geq d_f(x,y) + d_f(y,z).
+\end{align*} \label{thm:pythagineq}
+\end{theorem} 
+\begin{proof}
+Define $G(x) = d_f(x,y)-d_f(x,z)$.  Then
+\begin{align*}
+G(x) &= f(x)-f(y) - \langle \nabla f(y),x-y\rangle - \left(
+  f(x)-f(z)-\langle \nabla f(z),x-z \rangle \right)\\
+&= f(z) + \langle \nabla f(z),x-z \rangle - f(y) - \langle \nabla
+f(y), x-y \rangle,
+\end{align*}
+so $G$ is linear in $x$.  Moreover $G(y)= d_f(y,y) - d_f(y,z) =
+-d_f(y,z)$. Let $\alpha \in [0,1]$ and $x_\alpha = \alpha x + (1-\alpha)y$.   
+\begin{align*}
+G(x_\alpha) = G(\alpha x + (1-\alpha) y) &= \alpha G(x) +
+(1-\alpha)G(y) \\
+&= \alpha (d_f(x,y)-d_f(x,z) +d_f(y,z)) -d_f(y,z).
+\end{align*}
+Also,
+\begin{align*}
+G(x_\alpha) =d_f(x_\alpha,y) - d_f(x_\alpha,z),
+\end{align*}
+so, when $\alpha>0$,
+\begin{align*}
+d_f(x,y) +d_f(y,z) - d_f(x,z) = \frac{d_f(y,z)+ d_f(x_\alpha,y) -
+  d_f(x_\alpha,z)}{\alpha}.
+\end{align*}
+We show that the right hand side is less than or equal to zero.  Since
+$x_\alpha \in C$ and $y$ is the projection of $z$ onto $C$, $d_f(y,z)
+\leq d_f(x_\alpha,z)$. Thus we only need to show that
+$\frac{d_f(x_\alpha,y)}{\alpha} \leq 0$ for some $\alpha$.  We do this
+by taking the limit as $\alpha\rightarrow 0$ from the right:  
+\begin{align*}
+\lim_{\alpha\rightarrow 0} \frac{d_f(x_\alpha,y)}{\alpha} &=
+\lim_{\alpha\rightarrow 0} \frac{f(\alpha x+ (1-\alpha)y) - f(y)
+  -\langle \nabla f(y),\alpha x-\alpha y\rangle}{\alpha} \\
+&= \lim_{\alpha\rightarrow 0} \frac{f(\alpha x + (1-\alpha)y) -
+  f(y)}{\alpha} - \lim_{\alpha\rightarrow 0} \frac{\langle \nabla
+  f(y),\alpha x + (1-\alpha)y -y \rangle}{\alpha}\\
+&= \langle \nabla f(y),x-y \rangle - \lim_{\alpha\rightarrow 0}
+\langle \nabla f(y),x-y \rangle \quad \mbox{ (by
+  l'H\^{o}pitals rule) } \\
+&= 0. 
+\end{align*}
+\end{proof}
+The previous inequality becomes an equality if $C$ is an affine space.
+\begin{theorem} Let $C$ be an affine space and let $y=\argmin_{y\in C}
+  d_f(y,z)$ be the bregman projection of $z$ onto $C$.  Let $x\in C$.
+  Then
+\begin{align*}
+d_f(x,z) = d_f(x,y) + d_f(y,z).
+\end{align*}
+\end{theorem}
+\begin{proof}
+Let $x'$ be any point in $C$, and set $\lambda$ to satisfy 
+$y=\lambda x+ (1-\lambda) x'$.  
+Define $x_\alpha = \alpha x + (1-\alpha)
+x'$, and let $G(x) = d_f(x,y) - d_f(x,z)$.  Since $G(x_\alpha) =
+d_f(x_\alpha,y) - d_f(x_\alpha,z)$,
+\begin{align}
+\frac{\partial G(x_\alpha)}{\partial \alpha} =
+\frac{\partial}{\partial \alpha} d_f(x_\alpha,y) -
+\frac{\partial}{\partial \alpha} d_f(x_\alpha,z). \label{eq:derivs}
+\end{align}
+Note that $x_{\alpha}\in C$; since $y$ is the projection of $z$ onto
+$C$ and $x_\alpha = y$ when $\alpha=\lambda$, $d_f(x_\alpha,z)$ is
+minimized at $\alpha=\lambda$.  Moreover, $d_f(x_\alpha,y)$ is also
+minimized at $\alpha=\lambda$ (it is zero there).  Thus, both 
+divergences on the right of (\ref{eq:derivs}) are minimized at
+$\alpha=\lambda$, implying $\left. \frac{\partial
+  G(x_\alpha)}{\partial \alpha} \right|_{\alpha = \lambda} = 0$.
+
+Using the linearity of $G$ (see the proof of theorem
+\ref{thm:pythagineq}), we can expand 
+\begin{align*} 
+G(x_\alpha) &= d_f(x_\alpha,y) - d_f(x_\alpha,z) \\
+&= \alpha (d_f(x,y) - d_f(x,z)) + (1-\alpha) (d_f(x',y) - d_f(x',z)).
+\end{align*}
+
+Differentiating with respect to $\alpha$, we get
+\begin{align*}
+\frac{\partial G(x_\alpha)}{\partial \alpha} = d_f(x,y)-d_f(x,z) - d_f(x',y)
++ d_f(x',z).
+\end{align*}
+At $\alpha=\lambda$, $\frac{\partial G(x_\alpha)}{\partial \alpha}=0$,
+so
+\begin{align*}
+d_f(x,y)-d_f(x,z) - d_f(x',y)
++ d_f(x',z)=0.
+\end{align*}
+This equality is true for all $x' \in C$, so picking $x'=y$, we get 
+\begin{align*}
+d_f(x,z) = d_f(x,y) + d_f(y,z).
+\end{align*}
+\end{proof}
+
+\subsection{Conjugacy} \label{sec:conjugate}
+Conjugacy is a central duality notion used in convex analysis \cite{r.70}.
+\begin{define}
+The \emph{convex conjugate} of a function $f: \R^d\rightarrow \R$ is
+\begin{align*}
+f^*(x) = \sup_y \left\{\langle x,y \rangle - f(y) \right\}.
+\end{align*}
+\end{define}
+The definition of a conjugate function immediately yields the 
+\emph{Fenchel-Young inequality}:
+\begin{align*}
+f(x) + f^*(y) \geq \langle x,y \rangle.
+\end{align*}
+If $f$ is differentiable, we can compute $f^*$ by setting the
+derivative to zero:
+\begin{align*}
+&\nabla_y \left( \langle x,y \rangle - f(y) \right)  = x - \nabla f(y)
+= 0\\
+&\Longrightarrow x = \nabla f(y)\\
+&\Longrightarrow y = (\nabla f)^{-1}(x).
+\end{align*}
+Thus
+\begin{align}
+f^*(x) = \langle x, (\nabla f)^{-1}(x) \rangle - f( (\nabla
+f)^{-1}(x)). \label{eq:conjdef}
+\end{align}
+A crucial property of the conjugate function is that its gradient
+is an inverse to the gradient of the original function.  To keep
+notation clean, define $h(x) \equiv \nabla f(x)$.  Then, following the
+above derivation, we have
+\begin{align*}
+f^*(x) &= \langle x,h^{-1}(x) \rangle - f(h^{-1}(x)); \mbox{ implying
+  that }\\
+\nabla f^*(x) &= h^{-1}(x) + \nabla h^{-1}(x) \cdot x - \nabla
+h^{-1}(x) \nabla f(h^{-1}(x))\\
+&=h^{-1}(x)\mbox{\;\; (since }\nabla f(x) = h(x)).  
+\end{align*}
+Thus $\nabla f$ and $\nabla f^*$ are inverses of one-another.  
+
+Let $x' \equiv \nabla f(x)$ and $y' \equiv \nabla f(y)$.  
+Then plugging $x'$ and $y'$ into (\ref{eq:conjdef}), we get the
+convenient relations 
+\begin{align*}
+f^*(x') &= \langle x',x \rangle - f(x) \quad \mbox{and}\\
+f^*(y') &= \langle y',y \rangle - f(y).
+\end{align*}
+Let us now consider the bregman divergence 
+associated with $f$ in light of the conjugate function. We show
+that $d_{f^*}(y',x') = 
+d_f(x,y)$. 
+\begin{align*}
+d_{f^*}(y',x') &= f^*(y') - f^*(x') - \langle \nabla f^*(x'), y'-x'
+\rangle \\
+&= \langle y',y \rangle -f(y) - \langle x,x' \rangle + f(x) - \langle
+\nabla f^*(x'), y'-x' \rangle\\
+&= f(x) - f(y) -\langle x',x \rangle + \langle y',y
+\rangle - \langle x,y' - x' \rangle \quad
+\mbox{(since $x = \nabla f^*(x')$)}\\
+&= f(x) - f(y) - \langle \nabla f(y),x-y \rangle \\
+&= d_f(x,y).
+\end{align*}
+This equality is useful because it permits algorithms designed to
+optimize over the first argument to work over the second argument.  It
+provides an elegant way to sidestep the asymmetry of bregman
+divergences.  See section \ref{sec:rnn} for an example.
+
+Another easily derived equality is 
+\begin{align} 
+d_f(x,y) = f(x) + f^*(y') - \langle x,y'\rangle . \label{eq:breg-youngs}
+\end{align}
+This equality reveals another interpretation interpretation of a
+bregman divergence: it is a measurement of the slackness in the
+Fenchel-Young inequality. 
+
+\subsection{Centroidal property}
+Bregman divergences satisfy a centroidal property that makes them
+amenable to $k$-means style clustering \cite{bm.05}.  This property states
+that the average divergence from a point to a set can be decomposed as
+the divergence from the point to the set's centroid plus the average
+divergence from the set to the centroid.  
+\begin{theorem}
+Let $S \subset \R^d$ be a set of size $n$ and let $d_f(S,x)$ denote
+$\sum_{s\in S} d_f(s,x)$.  Let $\mu = \frac{1}{n}\sum_{s\in S} s$ be the mean of
+$S$.  Then for all $x \in \R^d$, 
+\begin{align*}
+d_f(S,x) = d_f(S,\mu) + n d_f(\mu,x).
+\end{align*}
+\end{theorem}
+\begin{proof}
+Expanding the right side, we have
+\begin{align*}
+d_f&(S,\mu) + n \cdot d_f(\mu,x) \\
+&= \sum_s f(s) - n f(\mu) - \sum_s \langle \nabla
+f(\mu),s-\mu \rangle +n f(\mu) - n f(x) - n \langle \nabla f(x),\mu-x \rangle\\
+&= \sum_s \left( f(s) - f(x) \right) - \sum_s \langle \nabla
+f(\mu),s-\mu \rangle - n \langle \nabla f(x),\mu-x \rangle \\
+&= \sum_s \left( f(s) - f(x) \right) - \left\langle \nabla f(\mu),\sum_s s-
+n \mu \right\rangle - \langle \nabla f(x),n\mu-nx \rangle \\
+&= \sum_s \left( f(s) - f(x) \right) - \left\langle \nabla f(x),\sum_s
+(s-x) \right\rangle \\
+&= \sum_s \left( f(s) - f(x) - \langle \nabla f(x),s-x \rangle \right)
+\\
+&= d_f(S,x).
+\end{align*}
+\end{proof}
+
+
+\subsection{Other technical results}
+One convenient property of bregman divergences is that they can by
+composed.  Suppose that $\{f_i\}$ are strictly convex functions and
+$\{\alpha_i\}$ is a set of non-negative numbers.  Then $g\equiv\sum\alpha_i
+f_i$ is also a strictly convex function. Thus we can define a bregman
+divergence based on $g$
+\begin{align*}
+d_g(x,y) &= \sum \alpha_i f_i(x) - \sum\alpha_i f_i(y) -\langle \nabla
+\left[ \sum\alpha_i f_i(y)\right],x-y \rangle\\
+&= \sum \alpha_id_{f_i}(x,y).
+\end{align*}
+Similarly, one can define a $D$-dimensional multivariate bregman
+by summing $D$ one-dimensional bregman divergences coordinate-wise.
+These properties are useful for working with mixed-type data.  For
+example, a point $x$ might have a histogram component of, say, the first
+10 coordinates, and a vector coordinate of the next 5 coordinates.
+A reasonable way to compute the distance between two such points would
+be to measure the KL-divergence between the first 10 coordinates, and
+the $\ell_2^2$ distance between the last 5.  Any machinery defined for
+arbitrary bregman divergences, such as the fast NN algorithms
+developed in this dissertation, will be able to handle this mixed-type
+divergence as it is itself a bregman divergence.  
+
+
+In the proof of theorem \ref{thm:pythagineq}, we showed that the
+difference $G(x)=d_f(x,y) - d_f(x,z)$ is linear in $x$:
+\begin{align*}
+G(x) &= f(x)-f(y)- \langle \nabla f(y),x-y \rangle -\left( f(x) - f(z)
+  -\langle f(z),x-z \rangle \right)\\
+&= f(z) + \langle \nabla f(z),x-z \rangle - f(y) - \langle \nabla
+f(y), x-y \rangle.
+\end{align*}
+In particular, this means that the set of points equidistant from $y$
+and $z$ lie on a hyperplane.
+\begin{theorem}
+The set of points $\{x: d_f(x,y) = d_f(x,z)\}$ is an affine set. 
+\end{theorem}
+
+Bregman divergences do not in general satisfy the triangle inequality,
+but do satisfy the three point property
+\begin{align*}
+d_f(x,y) + d_f(y,z) = d_f(x,z) + \langle \nabla f(z) - \nabla f(y),x-y
+\rangle. 
+\end{align*}
+
+Finally, symmetrized bregman divergences have a particularly simple form:
+\begin{align*}
+d_f(x,y) + d_f(y,x) &= f(x) - f(y) - \langle \nabla f(y),x-y \rangle +
+f(y) - f(x) - \langle \nabla f(x), y-x \rangle \\
+&= \langle \nabla f(x) - \nabla f(y), x-y \rangle. 
+\end{align*}
+
 
 \section{Work related to bregman proximity search}
 This dissertation presents the first algorithms and data structures

@@ -31,16 +31,10 @@ and online learning, \textit{e.g.}
 \cite{gls.97,hw.98,aw.01} and were later identified with the $k$-means
 algorithm \cite{bm.05}.   
 
-\section{Definition and Motivation}
-In this section we explain what a bregman divergence is and why they
-are compelling objects of study.  These divergences arise naturally
-from a surprisingly disparate collection of sources.  We consider
-four.  First, they are a key ingredient in iterative optimization
-schemes for convex optimization.  Second, they have a deep connection
-to the exponential family of probability distributions.  Third, they
-arise out of basic axioms in connection with maximum likelihood
-estimation.  Finally, they satisfy certain mathematical properties
-that make them a central concept in information geometry.  
+\section{Definition}
+In this section we define bregman divergences and give a few standard
+examples.  We then discuss the convex conjugate, which will be a
+crucial tool for working with these divergences.  
 %Their basic
 %mathematical properties show them to be a generalization of $\ell_2^2$
 %and the relative entropy, connecting them to the $k$-means algorithm.  
@@ -55,10 +49,49 @@ on $f$ is defined as
 \end{align*}
 Note that $d_f:C \times \relint(C) \longrightarrow \R_+$.  
 \end{define}
-A bregman divergence measures the distance between $f$ and its
-first-order taylor expansion.  See figure \ref{fig:bregDef}.  Table
-\ref{tbl:bregdivs} lists some common bregman divergences.  
+We will refer to the function $f$ as the \emph{base function}; in the
+literature, it is also sometimes called a seed or Bregman function.  
 
+A bregman divergence measures the distance between $f$ and its
+first-order taylor expansion.  See figure \ref{fig:bregDef}.  
+
+Let us consider a couple of basic examples.  First, suppose that $f:
+\R^D \rightarrow \R$ is defined as $f(x) \equiv \frac{1}{2} 
+\|x\|^2$, where $\|\cdot\|$ is the standard $\ell_2$-norm.  Then
+plugging this $f$ into the definition, we find that  
+\begin{align*}
+d_f(x,y) &= f(x) - f(y) - \langle \nabla f(y),x-y \rangle \\
+&= \frac{1}{2}\|x\|^2 - \frac{1}{2} \|y\|^2 -\langle y, x-y \rangle\\
+&= \frac{1}{2}\|x\|^2 + \frac{1}{2} \|y\|^2 -\langle y, x \rangle\\
+&= \frac{1}{2}\|x-y\|^2.
+\end{align*}
+In this case, the bregman divergence is simply the squared Euclidean
+distance between $x$ and $y$.  In this case the divergence is
+symmetric, but it need not be in general.
+
+For the second example, consider $f$ defined on the unit simplex
+$\triangle^D$ as $f\equiv \sum_i x_i\log(x_i)$.  Then its gradient is
+$\nabla f = \log{x} -1$, where $\log{x}$ denotes the entrywise
+logarithm.  
+\begin{align*}
+d_f(x,y) &= f(x) - f(y) - \langle \nabla f(y),x-y \rangle \\
+&= \sum_i x_i\log{x_i} - \sum_i y_i\log{y_i} - \langle \log{y}-1,x-y
+\rangle\\
+&= \sum_i x_i\left(\log{x_i} - \log{y_i}\right) + \sum_i (x_i - y_i)\\
+&= \sum_i x_i\left(\log{x_i} - \log{y_i}\right) \quad\mbox{since
+  $x,y\in \triangle^D$}\\
+&= \sum_i x_i\log{\frac{x_i}{y_i}}.  
+\end{align*}
+Hence $d_f$ in this case is the KL-divergence or relative entropy
+between $x$ and $y$. 
+
+Table \ref{tbl:bregdivs} lists some of the most used bregman
+divergences.   
+
+The strict convexity of $f$ implies that a bregman divergence is
+always non-negative and equal to zero only if its two arguments are
+identical.  It is similarly easy to check that a bregman divergences
+is convex in its first argument, but not necessarily in its second.  
 
 \begin{figure}
 \begin{center}
@@ -98,6 +131,11 @@ von Neumann entropy & $S_{++}^D$ & $\trace\left(X \log{X}-X\right)$ &  $\trace\l
 \renewcommand\arraystretch{1}
 \end{sidewaystable}
 
+\subsubsection{Extra technical conditions}
+Typically, one puts extra technical restrictions on allowable base
+functions.  We mention these extra conditions here, though will not be
+making use of them in the sequel.  
+
 It is often assumed that $f$ is not only strictly convex but is also
 \emph{Legendre}.  A function $f:C\rightarrow \R$ is Legendre if 
 \begin{itemize}
@@ -110,17 +148,97 @@ It is often assumed that $f$ is not only strictly convex but is also
 These additional requirements aid in the analysis of certain iterative
 projection algorithms \cite{cz.97}.  
 
-The strict convexity of $f$ implies that a bregman divergence is
-always non-negative and equal to zero only if its two arguments are
-identical.  It is similarly easy to check that a bregman divergences
-is convex in its first argument, but not necessarily in its second.  
+\subsection{Conjugacy} \label{sec:conjugate}
+Conjugacy is a central duality notion used in convex analysis \cite{r.70}.
+\begin{define}
+The \emph{convex conjugate} of a function $f: \R^d\rightarrow \R$ is
+\begin{align*}
+f^*(x) = \sup_y \left\{\langle x,y \rangle - f(y) \right\}.
+\end{align*}
+\end{define}
+The definition of a conjugate function immediately yields the 
+\emph{Fenchel-Young inequality}:
+\begin{align*}
+f(x) + f^*(y) \geq \langle x,y \rangle.
+\end{align*}
+If $f$ is differentiable, we can compute $f^*$ by setting the
+derivative to zero:
+\begin{align*}
+&\nabla_y \left( \langle x,y \rangle - f(y) \right)  = x - \nabla f(y)
+= 0\\
+&\Longrightarrow x = \nabla f(y)\\
+&\Longrightarrow y = (\nabla f)^{-1}(x).
+\end{align*}
+Thus
+\begin{align}
+f^*(x) = \langle x, (\nabla f)^{-1}(x) \rangle - f( (\nabla
+f)^{-1}(x)). \label{eq:conjdef}
+\end{align}
+A crucial property of the conjugate function is that its gradient
+is an inverse to the gradient of the original function.  To keep
+notation clean, define $h(x) \equiv \nabla f(x)$.  Then, following the
+above derivation, we have
+\begin{align*}
+f^*(x) &= \langle x,h^{-1}(x) \rangle - f(h^{-1}(x)); \mbox{ implying
+  that }\\
+\nabla f^*(x) &= h^{-1}(x) + \nabla h^{-1}(x) \cdot x - \nabla
+h^{-1}(x) \nabla f(h^{-1}(x))\\
+&=h^{-1}(x)\mbox{\;\; (since }\nabla f(x) = h(x)).  
+\end{align*}
+Thus $\nabla f$ and $\nabla f^*$ are inverses of one-another.  
 
+Let $x' \equiv \nabla f(x)$ and $y' \equiv \nabla f(y)$.  
+Then plugging $x'$ and $y'$ into (\ref{eq:conjdef}), we get the
+convenient relations 
+\begin{align*}
+f^*(x') &= \langle x',x \rangle - f(x) \quad \mbox{and}\\
+f^*(y') &= \langle y',y \rangle - f(y).
+\end{align*}
+Let us now consider the bregman divergence 
+associated with $f$ in light of the conjugate function. We show
+that $d_{f^*}(y',x') = 
+d_f(x,y)$. 
+\begin{align*}
+d_{f^*}(y',x') &= f^*(y') - f^*(x') - \langle \nabla f^*(x'), y'-x'
+\rangle \\
+&= \langle y',y \rangle -f(y) - \langle x,x' \rangle + f(x) - \langle
+\nabla f^*(x'), y'-x' \rangle\\
+&= f(x) - f(y) -\langle x',x \rangle + \langle y',y
+\rangle - \langle x,y' - x' \rangle \quad
+\mbox{(since $x = \nabla f^*(x')$)}\\
+&= f(x) - f(y) - \langle \nabla f(y),x-y \rangle \\
+&= d_f(x,y).
+\end{align*}
+This equality is useful because it permits algorithms designed to
+optimize over the first argument to work over the second argument.  It
+provides an elegant way to sidestep the asymmetry of bregman
+divergences.  
+
+Another easily derived equality is 
+\begin{align} 
+d_f(x,y) = f(x) + f^*(y') - \langle x,y'\rangle . \label{eq:breg-youngs}
+\end{align}
+This equality reveals another interpretation interpretation of a
+bregman divergence: it is a measurement of the slackness in the
+Fenchel-Young inequality. 
+
+
+\section{Origins}
+Bregman divergences arise naturally
+from a surprisingly disparate collection of sources.  We consider
+four.  First, they are a key ingredient in iterative optimization
+schemes for convex optimization.  Second, they have a deep connection
+to the exponential family of probability distributions.  Third, they
+arise out of basic axioms in connection with maximum likelihood
+estimation.  Finally, they satisfy certain mathematical properties
+that make them a central concept in information geometry.  
 \subsection{Convex optimizaton}
 
 \subsection{Exponential families}
 There is a remarkable connection between bregman divergences and
-exponential families.  We sketch the basic details in this
-section.  
+the exponential family of probability distributions.  Roughly
+speaking, for each member of this family, we can define a bregman
+divergence which will measure the similarity between ....
 
 Let $\nu$ be a $\sigma$-finite measure defined on the Borel subsets of
 $\R^D$.  An  exponential family
@@ -345,79 +463,6 @@ d_f(x,z) = d_f(x,y) + d_f(y,z).
 \end{align*}
 \end{proof}
 
-\subsection{Conjugacy} \label{sec:conjugate}
-Conjugacy is a central duality notion used in convex analysis \cite{r.70}.
-\begin{define}
-The \emph{convex conjugate} of a function $f: \R^d\rightarrow \R$ is
-\begin{align*}
-f^*(x) = \sup_y \left\{\langle x,y \rangle - f(y) \right\}.
-\end{align*}
-\end{define}
-The definition of a conjugate function immediately yields the 
-\emph{Fenchel-Young inequality}:
-\begin{align*}
-f(x) + f^*(y) \geq \langle x,y \rangle.
-\end{align*}
-If $f$ is differentiable, we can compute $f^*$ by setting the
-derivative to zero:
-\begin{align*}
-&\nabla_y \left( \langle x,y \rangle - f(y) \right)  = x - \nabla f(y)
-= 0\\
-&\Longrightarrow x = \nabla f(y)\\
-&\Longrightarrow y = (\nabla f)^{-1}(x).
-\end{align*}
-Thus
-\begin{align}
-f^*(x) = \langle x, (\nabla f)^{-1}(x) \rangle - f( (\nabla
-f)^{-1}(x)). \label{eq:conjdef}
-\end{align}
-A crucial property of the conjugate function is that its gradient
-is an inverse to the gradient of the original function.  To keep
-notation clean, define $h(x) \equiv \nabla f(x)$.  Then, following the
-above derivation, we have
-\begin{align*}
-f^*(x) &= \langle x,h^{-1}(x) \rangle - f(h^{-1}(x)); \mbox{ implying
-  that }\\
-\nabla f^*(x) &= h^{-1}(x) + \nabla h^{-1}(x) \cdot x - \nabla
-h^{-1}(x) \nabla f(h^{-1}(x))\\
-&=h^{-1}(x)\mbox{\;\; (since }\nabla f(x) = h(x)).  
-\end{align*}
-Thus $\nabla f$ and $\nabla f^*$ are inverses of one-another.  
-
-Let $x' \equiv \nabla f(x)$ and $y' \equiv \nabla f(y)$.  
-Then plugging $x'$ and $y'$ into (\ref{eq:conjdef}), we get the
-convenient relations 
-\begin{align*}
-f^*(x') &= \langle x',x \rangle - f(x) \quad \mbox{and}\\
-f^*(y') &= \langle y',y \rangle - f(y).
-\end{align*}
-Let us now consider the bregman divergence 
-associated with $f$ in light of the conjugate function. We show
-that $d_{f^*}(y',x') = 
-d_f(x,y)$. 
-\begin{align*}
-d_{f^*}(y',x') &= f^*(y') - f^*(x') - \langle \nabla f^*(x'), y'-x'
-\rangle \\
-&= \langle y',y \rangle -f(y) - \langle x,x' \rangle + f(x) - \langle
-\nabla f^*(x'), y'-x' \rangle\\
-&= f(x) - f(y) -\langle x',x \rangle + \langle y',y
-\rangle - \langle x,y' - x' \rangle \quad
-\mbox{(since $x = \nabla f^*(x')$)}\\
-&= f(x) - f(y) - \langle \nabla f(y),x-y \rangle \\
-&= d_f(x,y).
-\end{align*}
-This equality is useful because it permits algorithms designed to
-optimize over the first argument to work over the second argument.  It
-provides an elegant way to sidestep the asymmetry of bregman
-divergences.  See section \ref{sec:rnn} for an example.
-
-Another easily derived equality is 
-\begin{align} 
-d_f(x,y) = f(x) + f^*(y') - \langle x,y'\rangle . \label{eq:breg-youngs}
-\end{align}
-This equality reveals another interpretation interpretation of a
-bregman divergence: it is a measurement of the slackness in the
-Fenchel-Young inequality. 
 
 \subsection{Centroidal property}
 Bregman divergences satisfy a centroidal property that makes them
@@ -522,6 +567,7 @@ in the derivation of their data structure.  In particular, they cite
 the pythagorean theorem as an \emph{equality} for projection onto an
 arbitrary convex set, whereas it is actually an \emph{inequality}.  
 
+\nocite{d.2005}
 \bibliographystyle{alpha}                              
 \bibliography{biblio}  
 

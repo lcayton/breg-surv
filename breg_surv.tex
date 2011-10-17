@@ -70,7 +70,7 @@ distance between $x$ and $y$.  In this case the divergence is
 symmetric, but it need not be in general.
 
 For the second example, consider $f$ defined on the unit simplex
-$\triangle^D$ as $f\equiv \sum_i x_i\log(x_i)$.  Then its gradient is
+$\triangle^D$ as $f(x)\equiv \sum_i x_i\log(x_i)$.  Then its gradient is
 $\nabla f = \log{x} -1$, where $\log{x}$ denotes the entrywise
 logarithm.  
 \begin{align*}
@@ -88,10 +88,12 @@ between $x$ and $y$.
 Table \ref{tbl:bregdivs} lists some of the most used bregman
 divergences.   
 
-The strict convexity of $f$ implies that a bregman divergence is
-always non-negative and equal to zero only if its two arguments are
-identical.  It is similarly easy to check that a bregman divergences
-is convex in its first argument, but not necessarily in its second.  
+There are a couple of important properties of bregman divergences that
+follow directly from the definition.  First, the strict convexity of
+$f$ implies that a bregman divergence is always non-negative and equal
+to zero only if its two arguments are identical.  Second, any bregman
+divergence $d_f(x,y)$ is convex in $x$, but not necessarily in
+$y$.  This convexity follows easily from the convexity of $f$.  
 
 \begin{figure}
 \begin{center}
@@ -133,8 +135,8 @@ von Neumann entropy & $S_{++}^D$ & $\trace\left(X \log{X}-X\right)$ &  $\trace\l
 
 \subsubsection{Extra technical conditions}
 Typically, one puts extra technical restrictions on allowable base
-functions.  We mention these extra conditions here, though will not be
-making use of them in the sequel.  
+functions.  We mention these extra conditions here for reference,
+though will not be making use of them in the sequel.  
 
 It is often assumed that $f$ is not only strictly convex but is also
 \emph{Legendre}.  A function $f:C\rightarrow \R$ is Legendre if 
@@ -566,8 +568,8 @@ than 3x.  Moreover, there appears to be a significant technical flaw
 in the derivation of their data structure.  In particular, they cite
 the pythagorean theorem as an \emph{equality} for projection onto an
 arbitrary convex set, whereas it is actually an \emph{inequality}.  
-
-\nocite{d.2005}
+  
+\nocite{c.09,d.05}
 \bibliographystyle{alpha}                              
 \bibliography{biblio}  
 

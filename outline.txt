@@ -10,9 +10,8 @@
     * connection to exponential families
     * csiszar's axiomatic work
     * information geometric stuff
-3. Geometry
+4. Geometry
     * pythagorean thm
-    * conjugacy, fenchel-young
     * technical results: centroidal property (though we might cover
     this above), composability, difference of two divergences as an
     affine set.
